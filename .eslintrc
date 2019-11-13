@@ -9,9 +9,7 @@
     "mocha": true,
     "es6": true
   },
-  "extends": [
-    "eslint:recommended"
-  ],
+  "extends": ["eslint:recommended"],
   "rules": {
     "no-cond-assign": "off",
     "space-before-blocks": "error",
@@ -24,22 +22,15 @@
     "no-new-wrappers": "error",
     "no-with": "error",
     "block-spacing": "error",
-    "brace-style": [
-      "error",
-      "1tbs"
-    ],
+    "brace-style": ["error", "1tbs"],
     "indent": [
       "error",
-      4,
+      2,
       {
         "SwitchCase": 1
       }
     ],
-    "max-len": [
-      "error",
-      120,
-      { "ignoreComments": true }
-    ],
+    "max-len": ["error", 120, { "ignoreComments": true }],
     "newline-after-var": "error",
     "newline-before-return": "error",
     "no-multiple-empty-lines": [
@@ -52,10 +43,7 @@
     "no-nested-ternary": "error",
     "no-tabs": "error",
     "one-var-declaration-per-line": "error",
-    "quotes": [
-      "error",
-      "single"
-    ],
+    "quotes": ["error", "single"],
     "max-statements-per-line": [
       "error",
       {
@@ -91,17 +79,8 @@
         "after": true
       }
     ],
-    "consistent-this": [
-      "error",
-      "that"
-    ],
-    "lines-around-directive": [
-      "error",
-      "always"
-    ],
-    "max-nested-callbacks": [
-      "error",
-      4
-    ]
+    "consistent-this": ["error", "that"],
+    "lines-around-directive": ["error", "always"],
+    "max-nested-callbacks": ["error", 4]
   }
 }
