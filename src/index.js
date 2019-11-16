@@ -17,7 +17,7 @@
    isAllTrue([100, 2, 3, 4, 5], n => n < 10) // вернет false
  */
 function isAllTrue(array, fn) {
-  const isInvalidArray = typeof array !== 'object' || !array.length;
+  const isInvalidArray = !Array.isArray(array) || array.length === 0;
   const isNotFunction = typeof fn !== 'function';
   let result = true;
 
@@ -58,7 +58,7 @@ function isAllTrue(array, fn) {
    isSomeTrue([1, 2, 3, 4, 5], n => n > 20) // вернет false
  */
 function isSomeTrue(array, fn) {
-  const isInvalidArray = typeof array !== 'object' || !array.length;
+  const isInvalidArray = !Array.isArray(array) || array.length === 0;
   const isNotFunction = typeof fn !== 'function';
   let result = false;
 
