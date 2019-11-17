@@ -76,8 +76,8 @@ const validateRange = (range, length) => (range >= 0 ? range : length + range);
 
 function slice(array, from, to) {
   const slicedArray = [];
-  const validFrom = validateRange(from, array.length);
-  const validTo = validateRange(to, array.length) - 1;
+  const validFrom = validateRange(from, array.length) || 0;
+  const validTo = validateRange(to, array.length) - 1 || array.length - 1;
 
   for (let i = 0; i < array.length; i++) {
     if (i < validFrom || i > validTo) {
