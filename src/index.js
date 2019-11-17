@@ -72,12 +72,15 @@ function upperProps(obj) {
  Напишите аналог встроенного метода slice для работы с массивами
  Посмотрите как работает slice и повторите это поведение для массива, который будет передан в параметре array
  */
+const validateRange = (range, length) => (range >= 0 ? range : length + range);
+
 function slice(array, from, to) {
   const slicedArray = [];
-  const validTo = (to >= 0 ? to : array.length + to) - 1;
+  const validFrom = validateRange(from, array.length);
+  const validTo = validateRange(to, array.length) - 1;
 
   for (let i = 0; i < array.length; i++) {
-    if (i < from || i > validTo) {
+    if (i < validFrom || i > validTo) {
       continue;
     }
     const element = array[i];
