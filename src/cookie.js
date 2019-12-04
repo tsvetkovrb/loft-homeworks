@@ -43,7 +43,49 @@ const addButton = homeworkContainer.querySelector('#add-button');
 // таблица со списком cookie
 const listTable = homeworkContainer.querySelector('#list-table tbody');
 
-/** Helper functions */
+/** Helpers */
+
+/** Вообще, идея была в том, чтобы сделать централизованное место,
+ *  где хранился бы объект с куками, который соответствовал бы браузерным
+ *  и позволял не обращаться к браузеру, а отдавать куку из кэша
+ *  Вроде даже получилось, но тесты стали валиться и я приостановил это дело
+ *  Будет местом для улучшения
+ */
+class Cookie {
+  constructor() {
+    this.cookie = this._getCookie(document.cookie);
+  }
+
+  _getCookie(cookie) {
+    let initialCookie = {};
+
+    if (cookie) {
+      initialCookie = cookie.split('; ').reduce((prev, cur) => {
+        const [name, value] = cur.split('=');
+
+        prev[name] = value;
+
+        return prev;
+      }, {});
+    }
+
+    return initialCookie;
+  }
+
+  get() {
+    return this._getCookie(document.cookie);
+  }
+
+  set(cookieName, cookieValue) {
+    document.cookie = `${cookieName}=${cookieValue}`;
+  }
+
+  remove(cookieName, cookieValue) {
+    document.cookie = `${cookieName}=${cookieValue}; max-age=0`;
+  }
+}
+
+const cookieStore = new Cookie(document.cookie);
 
 const formatTextToIDValue = text => text.split(' ').join('_');
 
@@ -53,27 +95,9 @@ function removeCookie() {
   const nameField = nameCell.textContent;
   const valueField = valueCell.textContent;
 
-  document.cookie = `${nameField}=${valueField}; max-age=0`;
+  cookieStore.remove(nameField, valueField);
 
   listTable.removeChild(this.parentNode);
-}
-
-function getCookie() {
-  const availableCookie = document.cookie;
-
-  if (!availableCookie) {
-    return {};
-  }
-
-  const cookieObject = availableCookie.split('; ').reduce((prev, cur) => {
-    const [name, value] = cur.split('=');
-
-    prev[name] = value;
-
-    return prev;
-  }, {});
-
-  return cookieObject;
 }
 
 function createRow(cookieName, cookieValue) {
@@ -123,6 +147,10 @@ function clearTable() {
 }
 
 function filterCookie(cookie, searcheableCookie) {
+  /** Не особо нравится данная реализация.
+   *  Обсудил бы как можно сделать лучше
+  * */
+
   const filteredCookie = new Map();
 
   const keys = Object.keys(cookie);
@@ -141,12 +169,15 @@ function filterCookie(cookie, searcheableCookie) {
 
   if (filteredValues) {
     filteredValues.forEach(value => {
-      const [key, ...restKeys] = keys.filter(key => cookie[key] === value);
+      const keysArray = keys.filter(key => cookie[key] === value);
+      const onlyOneItem = keysArray.length === 1;
 
-      if (!restKeys.length) {
+      if (onlyOneItem) {
+        const [key] = keysArray;
+
         filteredCookie.set(key, value);
       } else {
-        [key, ...restKeys].forEach(key => {
+        keysArray.forEach(key => {
           filteredCookie.set(key, value);
         });
       }
@@ -156,15 +187,11 @@ function filterCookie(cookie, searcheableCookie) {
   return filteredCookie;
 }
 
-function setCookie(cookieName, cookieValue) {
-  document.cookie = `${cookieName}=${cookieValue}`;
-}
-
 function changeCookieValue(nameField, valueField) {
   const valueCell = document.getElementById(formatTextToIDValue(nameField));
 
   valueCell.textContent = valueField;
-  setCookie(nameField, valueField);
+  cookieStore.set(nameField, valueField);
 }
 
 function renderFilteredCookie(cookie, searcheableCookie) {
@@ -178,7 +205,7 @@ function renderFilteredCookie(cookie, searcheableCookie) {
 
 document.addEventListener('DOMContentLoaded', () => {
   filterNameInput.addEventListener('keyup', function() {
-    const cookie = getCookie();
+    const cookie = cookieStore.get();
 
     if (!this.value) {
       clearTable();
@@ -200,15 +227,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (searcheableCookie) {
-      setCookie(cookieName, cookieValue);
-      const cookie = getCookie();
+      cookieStore.set(cookieName, cookieValue);
+      const cookie = cookieStore.get();
 
       renderFilteredCookie(cookie, searcheableCookie);
 
       return;
     }
 
-    const cookie = getCookie();
+    const cookie = cookieStore.get();
     const hasCookie = cookieName in cookie;
     const sameCookie = hasCookie && cookie[cookieName] === cookieValue;
 
@@ -222,11 +249,11 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    setCookie(cookieName, cookieValue);
+    cookieStore.set(cookieName, cookieValue);
     renderRow(cookieName, cookieValue);
   });
 
-  const settedCookie = getCookie();
+  const settedCookie = cookieStore.get();
 
   renderRows(settedCookie);
 });
