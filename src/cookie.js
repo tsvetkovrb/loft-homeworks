@@ -43,6 +43,10 @@ const addButton = homeworkContainer.querySelector('#add-button');
 // таблица со списком cookie
 const listTable = homeworkContainer.querySelector('#list-table tbody');
 
+/** Helper functions */
+
+const formatTextToIDValue = text => text.split(' ').join('_');
+
 function removeCookie() {
   this.removeEventListener('click', removeCookie);
   const [nameCell, valueCell] = this.parentNode.children;
@@ -72,8 +76,6 @@ function getCookie() {
   return cookieObject;
 }
 
-const formattedValue = string => string.split(' ').join('_');
-
 function createRow(cookieName, cookieValue) {
   const fragment = document.createDocumentFragment();
   const row = document.createElement('tr');
@@ -83,7 +85,7 @@ function createRow(cookieName, cookieValue) {
 
   name.textContent = cookieName;
   value.textContent = cookieValue;
-  value.setAttribute('id', formattedValue(cookieName));
+  value.setAttribute('id', formatTextToIDValue(cookieName));
 
   deleteButton.textContent = 'Удалить';
   deleteButton.addEventListener('click', removeCookie);
@@ -98,6 +100,7 @@ function appendRow(target, row) {
   if (!row) {
     return;
   }
+
   target.append(row);
 }
 
@@ -107,124 +110,123 @@ function renderRow(cookieName, cookieVlaue) {
   appendRow(listTable, row);
 }
 
-filterNameInput.addEventListener('keyup', function() {
-  const cookie = getCookie();
+function renderRows(cookie) {
+  const itterableItem = cookie instanceof Map ? cookie : Object.entries(cookie);
 
-  if (!this.value) {
-    listTable.innerHTML = '';
-    for (const [key, value] of Object.entries(cookie)) {
-      renderRow(key, value);
-    }
-
-    return;
+  for (const [key, value] of itterableItem) {
+    renderRow(key, value);
   }
+}
+
+function clearTable() {
+  listTable.innerHTML = '';
+}
+
+function filterCookie(cookie, searcheableCookie) {
+  const filteredCookie = new Map();
 
   const keys = Object.keys(cookie);
   const values = Object.values(cookie);
-  const sortedCookies = new Map();
 
-  const filteredKeys = keys.filter(item => item.includes(this.value));
-  const filteredValues = values.filter(item => item.includes(this.value));
+  const filteredKeys = keys.filter(item => item.includes(searcheableCookie));
+  const filteredValues = values.filter(item => item.includes(searcheableCookie));
 
   if (filteredKeys) {
     filteredKeys.forEach(key => {
       const value = cookie[key];
 
-      sortedCookies.set(key, value);
+      filteredCookie.set(key, value);
     });
   }
 
   if (filteredValues) {
     filteredValues.forEach(value => {
-      const array = keys.filter(key => cookie[key] === value);
+      const [key, ...restKeys] = keys.filter(key => cookie[key] === value);
 
-      if (array.length === 1) {
-        sortedCookies.set(array[0], value);
+      if (!restKeys.length) {
+        filteredCookie.set(key, value);
       } else {
-        array.forEach(key => {
-          sortedCookies.set(key, value);
+        [key, ...restKeys].forEach(key => {
+          filteredCookie.set(key, value);
         });
       }
     });
   }
 
-  listTable.innerHTML = '';
-  for (const [cookieName, cookieVlaue] of sortedCookies) {
-    renderRow(cookieName, cookieVlaue);
-  }
-});
+  return filteredCookie;
+}
 
-addButton.addEventListener('click', () => {
-  const nameField = addNameInput.value;
-  const valueField = addValueInput.value;
+function setCookie(cookieName, cookieValue) {
+  document.cookie = `${cookieName}=${cookieValue}`;
+}
 
-  if (!nameField || !valueField) {
-    return;
-  }
+function changeCookieValue(nameField, valueField) {
+  const valueCell = document.getElementById(formatTextToIDValue(nameField));
 
-  if (filterNameInput.value) {
-    document.cookie = `${nameField}=${valueField}`;
-    const cookie = getCookie();
+  valueCell.textContent = valueField;
+  setCookie(nameField, valueField);
+}
 
-    const keys = Object.keys(cookie);
-    const values = Object.values(cookie);
-    const sortedCookies = new Map();
+function renderFilteredCookie(cookie, searcheableCookie) {
+  const filteredCookie = filterCookie(cookie, searcheableCookie);
 
-    const filteredKeys = keys.filter(item =>
-      item.includes(filterNameInput.value)
-    );
-    const filteredValues = values.filter(item =>
-      item.includes(filterNameInput.value)
-    );
+  clearTable();
+  renderRows(filteredCookie);
+}
 
-    if (filteredKeys) {
-      filteredKeys.forEach(key => {
-        const value = cookie[key];
-
-        sortedCookies.set(key, value);
-      });
-    }
-
-    if (filteredValues) {
-      filteredValues.forEach(value => {
-        const key = keys.find(key => cookie[key] === value);
-
-        sortedCookies.set(key, value);
-      });
-    }
-
-    listTable.innerHTML = '';
-    for (const [cookieName, cookieVlaue] of sortedCookies) {
-      renderRow(cookieName, cookieVlaue);
-    }
-
-    return;
-  }
-
-  const settedCookie = getCookie();
-
-  if (nameField in settedCookie && settedCookie[nameField] === valueField) {
-    return;
-  }
-
-  if (nameField in settedCookie) {
-    const valueCell = document.getElementById(formattedValue(nameField));
-
-    valueCell.textContent = valueField;
-    document.cookie = `${nameField}=${valueField}`;
-
-    return;
-  }
-
-  document.cookie = `${nameField}=${valueField}`;
-
-  renderRow(nameField, valueField);
-});
+/** Main logic */
 
 document.addEventListener('DOMContentLoaded', () => {
+  filterNameInput.addEventListener('keyup', function() {
+    const cookie = getCookie();
+
+    if (!this.value) {
+      clearTable();
+      renderRows(cookie);
+
+      return;
+    }
+
+    renderFilteredCookie(cookie, this.value);
+  });
+
+  addButton.addEventListener('click', () => {
+    const cookieName = addNameInput.value;
+    const cookieValue = addValueInput.value;
+    const searcheableCookie = filterNameInput.value;
+
+    if (!cookieName || !cookieValue) {
+      return;
+    }
+
+    if (searcheableCookie) {
+      setCookie(cookieName, cookieValue);
+      const cookie = getCookie();
+
+      renderFilteredCookie(cookie, searcheableCookie);
+
+      return;
+    }
+
+    const cookie = getCookie();
+    const hasCookie = cookieName in cookie;
+    const sameCookie = hasCookie && cookie[cookieName] === cookieValue;
+
+    if (sameCookie) {
+      return;
+    }
+
+    if (hasCookie) {
+      changeCookieValue(cookieName, cookieValue);
+
+      return;
+    }
+
+    setCookie(cookieName, cookieValue);
+    renderRow(cookieName, cookieValue);
+  });
+
   const settedCookie = getCookie();
 
-  for (const [cookieName, cookieValue] of Object.entries(settedCookie)) {
-    renderRow(cookieName, cookieValue);
-  }
+  renderRows(settedCookie);
 });
