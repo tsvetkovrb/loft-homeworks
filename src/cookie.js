@@ -81,7 +81,9 @@ class Cookie {
   }
 
   remove(cookieName, cookieValue) {
-    document.cookie = `${cookieName}=${cookieValue}; max-age=0`;
+    const date = new Date(0);
+
+    document.cookie = `${cookieName}=${cookieValue}; expires=${date.toUTCString()}`;
   }
 }
 
