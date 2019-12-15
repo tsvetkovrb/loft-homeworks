@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css?family=Fira+Sans:300,400,500&display=swap&subset=cyrillic" rel="stylesheet">
+    <title><%=htmlWebpackPlugin.options.title%></title>
+</head>
+<body>
+<div id="homework-container">
+    <div class="title">Приложение API Яндекс карт</div>
+    <div id="map" class="map"></div>
+</div>
+<script src="https://api-maps.yandex.ru/2.1/?apikey=83e8e901-ea75-487f-b76a-bf0f9adcc6b8&lang=ru_RU" type="text/javascript"></script>
+<script id="balloon-template" type="text/x-handlebars-template">
+    <div class="geo">
+        <header class="geo__header header">
+            <div class="header__info">
+                <img src="data:image/svg+xml;base64,PHN2ZyBhcmlhLWhpZGRlbj0idHJ1ZSIgZm9jdXNhYmxlPSJmYWxzZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2aWV3Qm94PSIwIDAgMzg0IDUxMiI+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTE3Mi4yNjggNTAxLjY3QzI2Ljk3IDI5MS4wMzEgMCAyNjkuNDEzIDAgMTkyIDAgODUuOTYxIDg1Ljk2MSAwIDE5MiAwczE5MiA4NS45NjEgMTkyIDE5MmMwIDc3LjQxMy0yNi45NyA5OS4wMzEtMTcyLjI2OCAzMDkuNjctOS41MzUgMTMuNzc0LTI5LjkzIDEzLjc3My0zOS40NjQgMHpNMTkyIDI3MmM0NC4xODMgMCA4MC0zNS44MTcgODAtODBzLTM1LjgxNy04MC04MC04MC04MCAzNS44MTctODAgODAgMzUuODE3IDgwIDgwIDgweiI+PC9wYXRoPjwvc3ZnPg==" alt="Иконка метки" class="header__icon">
+                <span class="header__address">{{address}}</span>
+            </div>
+            <a href="#" class="geo__close"></a>
+        </header>
+        <ul class="geo__reviews reviews">
+            {{#if cond}}
+                <li class="reviews__item">
+                    <div class="reviews__message">Отзывов пока нет...</div>
+                </li>
+            {{/if}}
+            {{#reviews}}
+                <li class="reviews__item">
+                    <div class="reviews__title">
+                        <span class="reviews__author">{{author}}</span>
+                        <span class="reviews__place">{{place}}</span>
+                        <span class="reviews__date">{{date}}</span>
+                    </div>
+                    <div class="reviews__message">{{message}}</div>
+                </li>
+            {{/reviews}}
+        </ul>
+        <form class="review">
+            <div class="review__title">Ваш отзыв</div>
+            <input placeholder="Ваше имя" name="name" type="text" class="review__input">
+            <input placeholder="Укажите место" name="place" type="text" class="review__input">
+            <textarea placeholder="Поделитесь впечатлениями" name="message" cols="30" rows="10" class="review__textarea"></textarea>
+            <button class="review__button">Добавить</button>
+        </form>
+    </div>
+</script>
+</body>
+</html>

@@ -1,7 +1,10 @@
 {
+  "globals": {
+    "ymaps": true
+  },
   "parserOptions": {
     "sourceType": "module",
-    "ecmaVersion": 7
+    "ecmaVersion": 2017
   },
   "env": {
     "node": true,
