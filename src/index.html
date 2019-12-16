@@ -1,27 +1,29 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="UTF-8">
-    <link href="https://fonts.googleapis.com/css?family=Fira+Sans:300,400,500&display=swap&subset=cyrillic" rel="stylesheet">
-    <title><%=htmlWebpackPlugin.options.title%></title>
+    <link href="https://fonts.googleapis.com/css?family=Fira+Sans:300,400,500&display=swap&subset=cyrillic"
+        rel="stylesheet">
+    <title>Georeview</title>
+    <script src="https://api-maps.yandex.ru/2.1/?apikey=83e8e901-ea75-487f-b76a-bf0f9adcc6b8&lang=ru_RU"
+        type="text/javascript"></script>
 </head>
+
 <body>
-<div id="homework-container">
-    <div class="title">Приложение API Яндекс карт</div>
-    <div id="map" class="map"></div>
-</div>
-<script src="https://api-maps.yandex.ru/2.1/?apikey=83e8e901-ea75-487f-b76a-bf0f9adcc6b8&lang=ru_RU" type="text/javascript"></script>
-<script id="balloon-template" type="text/x-handlebars-template">
-    <div class="geo">
-        <header class="geo__header header">
+    <div id="homework-container"><div id="map" class="map"></div></div>
+
+    <script id="balloon-template" type="text/x-handlebars-template">
+    <div class="balloon">
+        <header class="balloon__header header">
             <div class="header__info">
                 <img src="data:image/svg+xml;base64,PHN2ZyBhcmlhLWhpZGRlbj0idHJ1ZSIgZm9jdXNhYmxlPSJmYWxzZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2aWV3Qm94PSIwIDAgMzg0IDUxMiI+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTE3Mi4yNjggNTAxLjY3QzI2Ljk3IDI5MS4wMzEgMCAyNjkuNDEzIDAgMTkyIDAgODUuOTYxIDg1Ljk2MSAwIDE5MiAwczE5MiA4NS45NjEgMTkyIDE5MmMwIDc3LjQxMy0yNi45NyA5OS4wMzEtMTcyLjI2OCAzMDkuNjctOS41MzUgMTMuNzc0LTI5LjkzIDEzLjc3My0zOS40NjQgMHpNMTkyIDI3MmM0NC4xODMgMCA4MC0zNS44MTcgODAtODBzLTM1LjgxNy04MC04MC04MC04MCAzNS44MTctODAgODAgMzUuODE3IDgwIDgwIDgweiI+PC9wYXRoPjwvc3ZnPg==" alt="Иконка метки" class="header__icon">
                 <span class="header__address">{{address}}</span>
             </div>
-            <a href="#" class="geo__close"></a>
+            <a href="#" class="balloon__close"></a>
         </header>
-        <ul class="geo__reviews reviews">
-            {{#if cond}}
+        <ul class="balloon__reviews reviews">
+            {{#if noReview}}
                 <li class="reviews__item">
                     <div class="reviews__message">Отзывов пока нет...</div>
                 </li>
@@ -46,5 +48,7 @@
         </form>
     </div>
 </script>
+
 </body>
+
 </html>
